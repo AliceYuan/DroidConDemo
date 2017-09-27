@@ -1,0 +1,20 @@
+<resources>
+    <string name="app_name">Droidcon sample app</string>
+    <string name="welcome">Welcome to Pinterest Clone</string>
+    <string name="my_profile">My Profile</string>
+    <string name="pinner_profile">%s\'s Profile</string>
+    <string name="profile">Profile</string>
+    <string name="login_pinterest">Login with Pinterest</string>
+    <string name="pdk_manifest_key">pdk{your_api_key_here}</string>
+    <string name="pdk_api_key">your_api_key_here</string>
+    <string name="following">Following %1$d pinners.</string>
+    <string name="my_user_following">You are following %1$d pinners.</string>
+    <string name="user_following">%1$s is following %2$d pinners.</string>
+    <string name="menu_search">Search for user</string>
+    <string name="action_settings">Action</string>
+    <string name="search_hint">Search for a pinner...</string>
+    <string name="follow">Follow</string>
+    <string name="unfollow">Unfollow</string>
+    <string name="toast_follow">You are now following %1$s</string>
+    <string name="toast_unfollow">You have unfollowed %1$s</string>
+</resources>

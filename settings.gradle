@@ -1,0 +1,2 @@
+include ':app', ':pdk'
+project(':pdk').projectDir = new File('modules/pdk')
