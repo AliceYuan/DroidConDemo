@@ -9,22 +9,17 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.droidcontalk.aliceyuan.droidcontalk.MyUserUtils.UserCountApiCallback;
-import com.droidcontalk.aliceyuan.droidcontalk.MyUserUtils.FollowEvent;
 import com.pinterest.android.pdk.PDKCallback;
 import com.pinterest.android.pdk.PDKClient;
 import com.pinterest.android.pdk.PDKException;
 import com.pinterest.android.pdk.PDKResponse;
 import com.pinterest.android.pdk.PDKUser;
 
-import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
-
 import static com.droidcontalk.aliceyuan.droidcontalk.activity.LoginActivity.DEBUG;
 import static com.pinterest.android.pdk.Utils.log;
 
 
-public class MyProfileFragment extends Fragment {
+public class MyProfileFragment extends Fragment implements FollowListener {
 
     private final String USER_FIELDS = "id,username,image,counts,first_name,last_name,bio";
     //cache values to avoid having to make network calls in the future
@@ -39,7 +34,6 @@ public class MyProfileFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EventBus.getDefault().register(this);
     }
 
     @Override
@@ -106,15 +100,9 @@ public class MyProfileFragment extends Fragment {
         });
     }
 
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onMessageEvent(FollowEvent event) {
-        // update cached value
-        _followingCount = event.getFollowCount();
-    }
-
     @Override
-    public void onDestroy() {
-        super.onDestroy();
-        EventBus.getDefault().unregister(this);
+    public void onFollowCountChanged(int count) {
+        // update cached value
+        _followingCount = count;
     }
 }

@@ -85,19 +85,6 @@ public class MyUserUtils {
         return _myFollowedUserList.contains(user);
     }
 
-    public static class FollowEvent {
-
-        private final int _followCount;
-
-        public FollowEvent(int followCount) {
-            _followCount = followCount;
-        }
-
-        public int getFollowCount() {
-            return _followCount;
-        }
-    }
-
     /**
      * Since PDK does not expose the follow user API, we are mocking the callback for the purpose of the demo.
      */

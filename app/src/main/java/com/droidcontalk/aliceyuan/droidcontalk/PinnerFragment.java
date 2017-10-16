@@ -12,15 +12,12 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.Toast;
 
-import com.droidcontalk.aliceyuan.droidcontalk.MyUserUtils.FollowEvent;
 import com.droidcontalk.aliceyuan.droidcontalk.MyUserUtils.UserCountApiCallback;
 import com.pinterest.android.pdk.PDKCallback;
 import com.pinterest.android.pdk.PDKClient;
 import com.pinterest.android.pdk.PDKException;
 import com.pinterest.android.pdk.PDKResponse;
 import com.pinterest.android.pdk.PDKUser;
-
-import org.greenrobot.eventbus.EventBus;
 
 public class PinnerFragment extends Fragment {
 
@@ -32,6 +29,7 @@ public class PinnerFragment extends Fragment {
     private Button _followBtn;
     private boolean _following;
     private AvatarView _avatarView;
+    private FollowListener _followListener;
 
     public PinnerFragment() {
         // Required empty public constructor
@@ -94,9 +92,11 @@ public class PinnerFragment extends Fragment {
                 MyUserUtils.get().followUser(newFollowing, user, new UserCountApiCallback() {
                     @Override
                     public void onSuccess(int count) {
-                        EventBus.getDefault().post(new FollowEvent(count));
                         _following = newFollowing;
                         postToastFollow(newFollowing);
+                        if (_followListener != null) {
+                            _followListener.onFollowCountChanged(count);
+                        }
                     }
 
                     @Override
@@ -151,5 +151,9 @@ public class PinnerFragment extends Fragment {
             Toast.makeText(getContext(), getResources().getString(R.string.toast_unfollow,
                     _curUser.getFirstName()), Toast .LENGTH_SHORT).show();
         }
+    }
+
+    public void registerListener(FollowListener followListener) {
+        _followListener = followListener;
     }
 }
