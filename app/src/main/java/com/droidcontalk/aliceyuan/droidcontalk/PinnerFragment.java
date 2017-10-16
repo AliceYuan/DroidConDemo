@@ -2,15 +2,14 @@ package com.droidcontalk.aliceyuan.droidcontalk;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.util.Log;
-import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.LinearLayout;
-import android.widget.LinearLayout.LayoutParams;
 import android.widget.Toast;
 
 import com.droidcontalk.aliceyuan.droidcontalk.MyUserUtils.FollowEvent;
@@ -23,7 +22,7 @@ import com.pinterest.android.pdk.PDKUser;
 
 import org.greenrobot.eventbus.EventBus;
 
-public class PinnerFragment extends BaseProfileFragment {
+public class PinnerFragment extends Fragment {
 
     private static final String ARG_SEARCH = "search_query";
     @Nullable private String _searchQuery;
@@ -32,6 +31,7 @@ public class PinnerFragment extends BaseProfileFragment {
     private final String USER_FIELDS = "id,username,image,counts,first_name,last_name,bio";
     private Button _followBtn;
     private boolean _following;
+    private AvatarView _avatarView;
 
     public PinnerFragment() {
         // Required empty public constructor
@@ -53,41 +53,39 @@ public class PinnerFragment extends BaseProfileFragment {
         }
     }
 
+    @Nullable
+    @Override
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
+            @Nullable Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_pinner_profile, container, false);
+        return view;
+    }
+
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        _avatarView = (AvatarView) view.findViewById(R.id.avatar_view);
+        _followBtn = (Button) view.findViewById(R.id.follow_button);
         getActivity().setTitle(getResources().getString(R.string.profile));
+        loadUser();
     }
 
-
-    @Override
-    protected void loadUser() {
+    private void loadUser() {
         if (_searchQuery != null) {
             searchUser(_searchQuery);
         }
     }
 
-    @Override
-    public void updateFollowingCount(int count) {
-        _followersTv.setText(getResources().getString( R.string.user_following, _curUser.getFirstName(),
-                _curUser.getFollowingCount()));
+    private void updateFollowingCount(int count) {
+        _avatarView.updateFollowingText(getResources().getString( R.string.user_following, _curUser.getFirstName(),
+                count));
     }
 
-    @Override
-    protected void updateView(@NonNull PDKUser user) {
-        super.updateView(user);
-        init(getContext(), user);
-    }
-
-    private void init(final Context context, final PDKUser user) {
-        _followBtn = new Button(context);
-        LayoutParams layoutParams = new LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT);
-        layoutParams.gravity = Gravity.CENTER_HORIZONTAL;
-        _followBtn.setLayoutParams(layoutParams);
-        _followBtn.setTextColor(getResources().getColor(R.color.colorAccent));
-        _layout.addView(_followBtn);
+    private void init(final PDKUser user) {
+        final Context context = getContext();
         updateFollowingCount(user.getFollowingCount());
+        _avatarView.updateView(user.getFirstName() + " " + user.getLastName(),
+                MyUserUtils.get().getLargeImageUrl(user), user.getBio());
         _followBtn.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -129,7 +127,7 @@ public class PinnerFragment extends BaseProfileFragment {
                         _curUser = response.getUser();
                         if (_curUser != null) {
                             boolean following = MyUserUtils.get().isFollowing(_curUser);
-                            updateView(_curUser);
+                            init(_curUser);
                             setButtonFollow(following);
                             getActivity().setTitle(getResources().getString(R.string.pinner_profile,
                                     _curUser.getFirstName()));

@@ -69,6 +69,18 @@ public class MyUserUtils {
         }
     }
 
+    /**
+     * NOTE: this is a hack, pinterest api does not seem to return images of different sizes
+     * we will manually replace image url to be size 444px instead;
+     */
+    @Nullable
+    public String getLargeImageUrl(@Nullable PDKUser user) {
+        if (user.getImageUrl() != null) {
+            return user.getImageUrl().replace("60.jpg", "444.jpg");
+        }
+        return null;
+    }
+
     public boolean isFollowing(PDKUser user) {
         return _myFollowedUserList.contains(user);
     }
