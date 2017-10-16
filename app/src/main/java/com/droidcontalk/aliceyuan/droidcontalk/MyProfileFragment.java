@@ -2,7 +2,10 @@ package com.droidcontalk.aliceyuan.droidcontalk;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.droidcontalk.aliceyuan.droidcontalk.MyUserUtils.UserCountApiCallback;
@@ -21,12 +24,13 @@ import static com.droidcontalk.aliceyuan.droidcontalk.activity.LoginActivity.DEB
 import static com.pinterest.android.pdk.Utils.log;
 
 
-public class MyProfileFragment extends BaseProfileFragment {
+public class MyProfileFragment extends Fragment {
 
     private final String USER_FIELDS = "id,username,image,counts,first_name,last_name,bio";
     //cache values to avoid having to make network calls in the future
     private PDKUser _myUser;
     private int _followingCount;
+    private AvatarView _avatarView;
 
     public MyProfileFragment() {
         // Required empty public constructor
@@ -39,24 +43,33 @@ public class MyProfileFragment extends BaseProfileFragment {
     }
 
     @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        getActivity().setTitle(getResources().getString(R.string.my_profile));
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+            Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
+        View view = inflater.inflate(R.layout.fragment_my_profile, container, false);
+        return view;
     }
 
     @Override
-    protected void loadUser() {
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        _avatarView = (AvatarView) view.findViewById(R.id.avatar_view);
+        getActivity().setTitle(getResources().getString(R.string.my_profile));
+        loadUser();
+    }
+
+    private void loadUser() {
         if (_myUser == null) {
             loadMyUser();
         } else {
-            updateView(_myUser);
+            _avatarView.updateView(_myUser.getFirstName() + " " + _myUser.getLastName(),
+                    MyUserUtils.get().getLargeImageUrl(_myUser), _myUser.getBio());
             updateFollowingCount(_followingCount);
         }
     }
 
-    @Override
-    public void updateFollowingCount(int count) {
-        _followersTv.setText(getResources().getString(R.string.my_user_following, count));
+    private void updateFollowingCount(int count) {
+        _avatarView.updateFollowingText(getResources().getString(R.string.my_user_following, count));
     }
 
     private void loadMyUser() {
@@ -80,7 +93,8 @@ public class MyProfileFragment extends BaseProfileFragment {
                 if (DEBUG)
                     log(String.format("response", response.toString()));
                 _myUser = response.getUser();
-                updateView(_myUser);
+                _avatarView.updateView(_myUser.getFirstName() + " " + _myUser.getLastName(),
+                        MyUserUtils.get().getLargeImageUrl(_myUser), _myUser.getBio());
             }
 
             @Override
