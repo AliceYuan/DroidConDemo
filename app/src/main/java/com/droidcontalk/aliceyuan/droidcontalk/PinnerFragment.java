@@ -1,10 +1,8 @@
 package com.droidcontalk.aliceyuan.droidcontalk;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -12,24 +10,18 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.Toast;
 
-import com.droidcontalk.aliceyuan.droidcontalk.MyUserUtils.UserCountApiCallback;
-import com.pinterest.android.pdk.PDKCallback;
-import com.pinterest.android.pdk.PDKClient;
-import com.pinterest.android.pdk.PDKException;
-import com.pinterest.android.pdk.PDKResponse;
+import com.droidcontalk.aliceyuan.droidcontalk.framework.MVPContract.RepositoryListener;
+import com.droidcontalk.aliceyuan.droidcontalk.model.UserRepository;
 import com.pinterest.android.pdk.PDKUser;
 
 public class PinnerFragment extends Fragment {
 
     private static final String ARG_SEARCH = "search_query";
     @Nullable private String _searchQuery;
-    PDKUser _curUser;
 
-    private final String USER_FIELDS = "id,username,image,counts,first_name,last_name,bio";
     private Button _followBtn;
     private boolean _following;
     private AvatarView _avatarView;
-    private FollowListener _followListener;
 
     public PinnerFragment() {
         // Required empty public constructor
@@ -74,33 +66,31 @@ public class PinnerFragment extends Fragment {
         }
     }
 
-    private void updateFollowingCount(int count) {
-        _avatarView.updateFollowingText(getResources().getString( R.string.user_following, _curUser.getFirstName(),
-                count));
+    private void updateFollowingCount(int count, String firstName) {
+        _avatarView.updateFollowingText(getResources().getString( R.string.user_following, firstName, count));
     }
 
     private void init(final PDKUser user) {
-        final Context context = getContext();
-        updateFollowingCount(user.getFollowingCount());
+        updateFollowingCount(user.getFollowingCount(), user.getFirstName());
         _avatarView.updateView(user.getFirstName() + " " + user.getLastName(),
-                MyUserUtils.get().getLargeImageUrl(user), user.getBio());
+                user.getImageUrl(), user.getBio());
+        getActivity().setTitle(getResources().getString(R.string.pinner_profile,
+                user.getFirstName()));
         _followBtn.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
                 final boolean newFollowing = !_following;
                 setButtonFollow(newFollowing);
-                MyUserUtils.get().followUser(newFollowing, user, new UserCountApiCallback() {
+                UserRepository.get().followUser(newFollowing, user, new RepositoryListener<String>() {
                     @Override
-                    public void onSuccess(int count) {
+                    public void onSuccess(String model) {
                         _following = newFollowing;
-                        postToastFollow(newFollowing);
-                        if (_followListener != null) {
-                            _followListener.onFollowCountChanged(count);
-                        }
+                        postToastFollow(newFollowing, user.getFirstName());
                     }
 
                     @Override
-                    public void onFailure(PDKException pdkException) {
+                    public void onError(Exception e) {
+                        // revert on error
                         setButtonFollow(_following);
                     }
                 });
@@ -120,40 +110,38 @@ public class PinnerFragment extends Fragment {
     }
 
     private void searchUser(final String searchQuery) {
-        PDKClient.getInstance().getUser(searchQuery, USER_FIELDS, new PDKCallback() {
+        UserRepository.get().loadUserGivenUsername(searchQuery, new RepositoryListener<PDKUser>() {
+            @Override
+            public void onSuccess(PDKUser user) {
+                // the callback nesting can be avoided using rxJava, we will not be going over this in this code example
+                UserRepository.get().loadMyUserIsFollowing(user, new RepositoryListener<Boolean>() {
                     @Override
-                    public void onSuccess(PDKResponse response) {
-                        Log.d(getClass().getName(), "Response: " + response.getStatusCode());
-                        _curUser = response.getUser();
-                        if (_curUser != null) {
-                            boolean following = MyUserUtils.get().isFollowing(_curUser);
-                            init(_curUser);
-                            setButtonFollow(following);
-                            getActivity().setTitle(getResources().getString(R.string.pinner_profile,
-                                    _curUser.getFirstName()));
-                        }
+                    public void onSuccess(Boolean following) {
+                        setButtonFollow(following);
                     }
 
                     @Override
-                    public void onFailure(PDKException exception) {
-                        Log.e(getClass().getName(), "error: " + exception.getDetailMessage());
-                        Toast.makeText(getContext(), "Error: cannot find user of username \"" + searchQuery + "\"",
-                                Toast.LENGTH_SHORT).show(); }
-                }
-        );
+                    public void onError(Exception e) {
+
+                    }
+                });
+                init(user);
+            }
+
+            @Override
+            public void onError(Exception e) {
+
+            }
+        });
     }
 
-    private void postToastFollow(boolean follow) {
+    private void postToastFollow(boolean follow, String firstName) {
         if (follow) {
             Toast.makeText(getContext(), getResources().getString(R.string.toast_follow,
-                    _curUser.getFirstName()), Toast.LENGTH_SHORT).show();
+                    firstName), Toast.LENGTH_SHORT).show();
         } else {
             Toast.makeText(getContext(), getResources().getString(R.string.toast_unfollow,
-                    _curUser.getFirstName()), Toast .LENGTH_SHORT).show();
+                    firstName), Toast .LENGTH_SHORT).show();
         }
-    }
-
-    public void registerListener(FollowListener followListener) {
-        _followListener = followListener;
     }
 }
