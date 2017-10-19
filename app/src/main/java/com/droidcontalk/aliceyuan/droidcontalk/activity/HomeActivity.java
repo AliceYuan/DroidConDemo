@@ -16,7 +16,6 @@ import android.view.View;
 import android.view.View.OnFocusChangeListener;
 import android.view.inputmethod.InputMethodManager;
 
-import com.droidcontalk.aliceyuan.droidcontalk.FollowListener;
 import com.droidcontalk.aliceyuan.droidcontalk.MyProfileFragment;
 import com.droidcontalk.aliceyuan.droidcontalk.PinnerFragment;
 import com.droidcontalk.aliceyuan.droidcontalk.R;
@@ -24,14 +23,12 @@ import com.droidcontalk.aliceyuan.droidcontalk.R;
 public class HomeActivity extends AppCompatActivity {
     @Nullable SearchView _searchView;
     @Nullable private MenuItem _searchMenuItem;
-    FollowListener _followListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (savedInstanceState == null){
             MyProfileFragment myProfileFragment = new MyProfileFragment();
-            _followListener = myProfileFragment;
             getSupportFragmentManager().beginTransaction()
                     .add(android.R.id.content, myProfileFragment).commit();
         }
@@ -62,9 +59,6 @@ public class HomeActivity extends AppCompatActivity {
             public boolean onQueryTextSubmit(String query) {
                 hideKeyboard(getCurrentFocus());
                 PinnerFragment pinnerFragment = PinnerFragment.newInstance(query);
-                if (_followListener != null) {
-                    pinnerFragment.registerListener(_followListener);
-                }
                 getSupportFragmentManager().beginTransaction()
                         .replace(android.R.id.content, pinnerFragment)
                         .addToBackStack(query)

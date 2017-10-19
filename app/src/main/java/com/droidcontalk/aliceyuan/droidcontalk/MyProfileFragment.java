@@ -8,23 +8,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-import com.droidcontalk.aliceyuan.droidcontalk.MyUserUtils.UserCountApiCallback;
-import com.pinterest.android.pdk.PDKCallback;
-import com.pinterest.android.pdk.PDKClient;
-import com.pinterest.android.pdk.PDKException;
-import com.pinterest.android.pdk.PDKResponse;
+import com.droidcontalk.aliceyuan.droidcontalk.framework.MVPContract.RepositoryListener;
+import com.droidcontalk.aliceyuan.droidcontalk.model.UserRepository;
 import com.pinterest.android.pdk.PDKUser;
 
-import static com.droidcontalk.aliceyuan.droidcontalk.activity.LoginActivity.DEBUG;
-import static com.pinterest.android.pdk.Utils.log;
+public class MyProfileFragment extends Fragment {
 
-
-public class MyProfileFragment extends Fragment implements FollowListener {
-
-    private final String USER_FIELDS = "id,username,image,counts,first_name,last_name,bio";
     //cache values to avoid having to make network calls in the future
-    private PDKUser _myUser;
-    private int _followingCount;
     private AvatarView _avatarView;
 
     public MyProfileFragment() {
@@ -49,17 +39,7 @@ public class MyProfileFragment extends Fragment implements FollowListener {
         super.onViewCreated(view, savedInstanceState);
         _avatarView = (AvatarView) view.findViewById(R.id.avatar_view);
         getActivity().setTitle(getResources().getString(R.string.my_profile));
-        loadUser();
-    }
-
-    private void loadUser() {
-        if (_myUser == null) {
-            loadMyUser();
-        } else {
-            _avatarView.updateView(_myUser.getFirstName() + " " + _myUser.getLastName(),
-                    MyUserUtils.get().getLargeImageUrl(_myUser), _myUser.getBio());
-            updateFollowingCount(_followingCount);
-        }
+        loadMyUser();
     }
 
     private void updateFollowingCount(int count) {
@@ -67,42 +47,28 @@ public class MyProfileFragment extends Fragment implements FollowListener {
     }
 
     private void loadMyUser() {
-        MyUserUtils.get().loadMyFollowedUsersCount(new UserCountApiCallback() {
+        UserRepository.get().loadMyUserNumFollowing(new RepositoryListener<Integer>() {
             @Override
-            public void onSuccess(int count) {
-                _followingCount = count;
-                updateFollowingCount(count);
+            public void onSuccess(Integer followingCount) {
+                updateFollowingCount(followingCount);
             }
 
             @Override
-            public void onFailure(PDKException pdkException) {
+            public void onError(Exception e) {
 
-            }
-        });
-        PDKClient.getInstance().getMe(USER_FIELDS, new PDKCallback() {
-            @Override
-            public void onSuccess(PDKResponse response) {
-                if (DEBUG)
-                    log(String.format("status: %d", response.getStatusCode()));
-                if (DEBUG)
-                    log(String.format("response", response.toString()));
-                _myUser = response.getUser();
-                _avatarView.updateView(_myUser.getFirstName() + " " + _myUser.getLastName(),
-                        MyUserUtils.get().getLargeImageUrl(_myUser), _myUser.getBio());
-            }
-
-            @Override
-            public void onFailure(PDKException exception) {
-                if (DEBUG)
-                    log(exception.getDetailMessage());
-                Toast.makeText(getContext(), "/me Request failed", Toast.LENGTH_SHORT).show();
             }
         });
-    }
+        UserRepository.get().loadMyUser(new RepositoryListener<PDKUser>() {
+            @Override
+            public void onSuccess(PDKUser user) {
+                _avatarView.updateView(user.getFirstName() + " " + user.getLastName(),
+                        user.getImageUrl(), user.getBio());
+            }
 
-    @Override
-    public void onFollowCountChanged(int count) {
-        // update cached value
-        _followingCount = count;
+            @Override
+            public void onError(Exception e) {
+                Toast.makeText(getContext(), "UserRepository.loadMyUser failed", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 }
