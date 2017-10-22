@@ -16,8 +16,8 @@ import android.view.View;
 import android.view.View.OnFocusChangeListener;
 import android.view.inputmethod.InputMethodManager;
 
+import com.droidcontalk.aliceyuan.droidcontalk.view.PinnerFragment;
 import com.droidcontalk.aliceyuan.droidcontalk.MyProfileFragment;
-import com.droidcontalk.aliceyuan.droidcontalk.PinnerFragment;
 import com.droidcontalk.aliceyuan.droidcontalk.R;
 
 public class HomeActivity extends AppCompatActivity {
