@@ -1,4 +1,4 @@
-package com.droidcontalk.aliceyuan.droidcontalk;
+package com.droidcontalk.aliceyuan.droidcontalk.view;
 
 import android.content.Context;
 import android.support.annotation.Nullable;
@@ -8,6 +8,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.droidcontalk.aliceyuan.droidcontalk.R;
 import com.makeramen.roundedimageview.RoundedImageView;
 
 public class AvatarView extends LinearLayout {
