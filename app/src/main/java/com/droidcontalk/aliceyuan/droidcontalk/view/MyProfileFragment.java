@@ -43,7 +43,7 @@ public class MyProfileFragment extends MVPFragment implements MyProfileView{
 
     @Override
     public Presenter createPresenter() {
-        return new MyProfilePresenter(getViewResources());
+        return new MyProfilePresenter(getViewResources(), UserRepository.get());
     }
 
     @Override
