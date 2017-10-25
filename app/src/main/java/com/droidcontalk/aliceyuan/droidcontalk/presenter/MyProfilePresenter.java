@@ -7,14 +7,17 @@ import com.droidcontalk.aliceyuan.droidcontalk.R;
 import com.droidcontalk.aliceyuan.droidcontalk.framework.MVPContract.Presenter;
 import com.droidcontalk.aliceyuan.droidcontalk.framework.MVPContract.RepositoryListener;
 import com.droidcontalk.aliceyuan.droidcontalk.framework.MVPContract.ViewResources;
+import com.droidcontalk.aliceyuan.droidcontalk.model.UserDataSource;
 import com.droidcontalk.aliceyuan.droidcontalk.model.UserRepository;
 import com.pinterest.android.pdk.PDKUser;
 
 public class MyProfilePresenter implements Presenter<MyProfileView> {
     private final ViewResources _viewResources;
+    @NonNull private final UserDataSource _dataSource;
 
-    public MyProfilePresenter(ViewResources viewResources) {
+    public MyProfilePresenter(@NonNull ViewResources viewResources, @NonNull UserDataSource dataSource) {
         _viewResources = viewResources;
+        _dataSource = dataSource;
     }
 
     @Override
@@ -28,7 +31,7 @@ public class MyProfilePresenter implements Presenter<MyProfileView> {
     }
 
     private void loadUser(final MyProfileView view) {
-        UserRepository.get().loadMyUserNumFollowing(new RepositoryListener<Integer>() {
+        _dataSource.loadMyUserNumFollowing(new RepositoryListener<Integer>() {
             @Override
             public void onSuccess(Integer followingCount) {
                 view.updateFollowingText(_viewResources.getString(R.string.my_user_following, followingCount));
@@ -39,7 +42,7 @@ public class MyProfilePresenter implements Presenter<MyProfileView> {
 
             }
         });
-        UserRepository.get().loadMyUser(new RepositoryListener<PDKUser>() {
+        _dataSource.loadMyUser(new RepositoryListener<PDKUser>() {
             @Override
             public void onSuccess(PDKUser user) {
                 view.updateAvatarView(user.getFirstName() + " " + user.getLastName(),

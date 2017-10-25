@@ -18,7 +18,8 @@ import java.util.Map;
 import static com.droidcontalk.aliceyuan.droidcontalk.activity.LoginActivity.DEBUG;
 import static com.pinterest.android.pdk.Utils.log;
 
-public class UserRepository {
+public class UserRepository implements UserDataSource {
+
     // LazyHolder such that we don't have class class methods
     private static class LazyHolder {
         static final UserRepository INSTANCE = new UserRepository();
