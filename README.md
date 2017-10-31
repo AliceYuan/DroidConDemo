@@ -1,6 +1,10 @@
 Droidcon Demo App
 =====
 
+The slides for the talk is available at: https://goo.gl/idKr6W
+
+The video for talk is available at: http://uk.droidcon.com/skillscasts/10795-common-poor-coding-patterns-and-how-to-avoid-them
+
 The demo app looks like this:  
 
 ![alt text](demo_app.gif)
