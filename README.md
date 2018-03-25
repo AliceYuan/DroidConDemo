@@ -1,9 +1,7 @@
 Droidcon Demo App
 =====
 
-The slides for the talk is available at: https://goo.gl/idKr6W
-
-The video for talk is available at: http://uk.droidcon.com/skillscasts/10795-common-poor-coding-patterns-and-how-to-avoid-them
+The updated slides for the talk is available at: https://goo.gl/idKr6W
 
 The demo app looks like this:  
 
@@ -35,7 +33,7 @@ How to make app run
 =====
 *Note:* this app will not run without Pinterest PDK api key. 
 
-Getting an API key should be fairly straight forward ![See docs here](https://developers.pinterest.com/docs/api/overview/). 
+Getting an API key should be fairly straight forward ![See docs here](https://developers.pinterest.com/docs/sdks/android/). 
 
 First, create a Pinterest Developer application.
 
