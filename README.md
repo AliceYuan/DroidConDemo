@@ -1,7 +1,7 @@
 Droidcon Demo App
 =====
 
-The updated slides for the talk is available at: https://goo.gl/idKr6W
+The updated slides for the talk is available at: https://bit.ly/2pJrHQF
 
 The demo app looks like this:  
 
@@ -33,7 +33,7 @@ How to make app run
 =====
 *Note:* this app will not run without Pinterest PDK api key. 
 
-Getting an API key should be fairly straight forward ![See docs here](https://developers.pinterest.com/docs/sdks/android/). 
+Getting an API key should be fairly straight forward [See docs here](https://developers.pinterest.com/docs/sdks/overview/). 
 
 First, create a Pinterest Developer application.
 
