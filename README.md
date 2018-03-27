@@ -1,7 +1,7 @@
 Droidcon Demo App
 =====
 
-The updated slides for the talk is available at: https://bit.ly/2pJrHQF
+The updated slides for the talk is available at: https://bit.ly/2pN6pBM
 
 The demo app looks like this:  
 
