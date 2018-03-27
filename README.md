@@ -33,7 +33,7 @@ How to make app run
 =====
 *Note:* this app will not run without Pinterest PDK api key. 
 
-Getting an API key should be fairly straight forward [See docs here](https://developers.pinterest.com/docs/sdks/overview/). 
+Getting an API key should be fairly straight forward [See docs here](https://developers.pinterest.com/docs/api/overview/). 
 
 First, create a Pinterest Developer application.
 
